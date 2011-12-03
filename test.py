@@ -19,3 +19,7 @@ class Test(unittest.TestCase):
 
 	def testGetNewStateBreed(self):
 		assert(self.gol.get_new_state(2,2)==False)
+	
+	def testNextState(self):
+		expected = set([(0,2),(1,2),(1,3),(2,3)])
+		self.assertEquals(expected,self.gol.next_state())

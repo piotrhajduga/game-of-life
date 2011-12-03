@@ -22,3 +22,28 @@ class GameOfLife(object):
 			return True
 		return False
 
+	def next_state(self):
+		result = set()
+		for cell in self.current_state:
+			if self.get_new_state(*cell):
+				result.add(cell)
+			x = cell[0]
+			y = cell[1]
+			if self.get_new_state(x-1, y-1):
+				result.add((x-1,y-1))
+			if self.get_new_state(x-1, y):
+				result.add((x-1,y))
+			if self.get_new_state(x-1, y+1):
+				result.add((x-1,y+1))
+			if self.get_new_state(x, y-1):
+				result.add((x,y-1))
+			if self.get_new_state(x, y+1):
+				result.add((x,y+1))
+			if self.get_new_state(x+1, y-1):
+				result.add((x+1,y-1))
+			if self.get_new_state(x+1, y):
+				result.add((x+1,y))
+			if self.get_new_state(x+1, y+1):
+				result.add((x+1,y+1))
+		self.current_state = result
+		return result
