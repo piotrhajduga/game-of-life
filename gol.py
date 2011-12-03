@@ -5,11 +5,11 @@ class GameOfLife(object):
     
     def neighbour_count(self, x, y):
         number_of = 0
-		for (i, j) in [
-				(x-1, y-1), (x-1, y), (x-1, y+1),
-				(x, y-1)  ,         , (x, y+1),
-				(x+1, y-1), (x+1, y), (x+1, y+1),
-				]:
+        for (i, j) in [
+                (x-1, y-1), (x-1, y), (x-1, y+1),
+                (x, y-1)            , (x, y+1),
+                (x+1, y-1), (x+1, y), (x+1, y+1),
+                ]:
                 if (i, j) in self.current_state:
                     number_of += 1
         return number_of
@@ -24,36 +24,36 @@ class GameOfLife(object):
 
     def next_state(self):
         result = set()
-		if self.get_new_state(x, y):
-			result.add((x, y))
         for (x, y) in self.current_state:
-			for (i, j) in [
-					(x-1, y-1), (x-1, y), (x-1, y+1),
-					(x, y-1)  ,         , (x, y+1),
-					(x+1, y-1), (x+1, y), (x+1, y+1),
-					]:
-				if (i, j) in self.current_state:
-					continue
-				if self.get_new_state(i, j):
-					result.add((i, j))
+            if self.get_new_state(x, y):
+                result.add((x, y))
+            for (i, j) in [
+                    (x-1, y-1), (x-1, y), (x-1, y+1),
+                    (x, y-1)            , (x, y+1),
+                    (x+1, y-1), (x+1, y), (x+1, y+1),
+                    ]:
+                if (i, j) in self.current_state:
+                    continue
+                if self.get_new_state(i, j):
+                    result.add((i, j))
         self.current_state = result
         return result
 
 def print_state(gol,start,end):
-	for i in range(start[0],end[0]+1):
-		line = ""
-		for j in range(start[1],end[1]+1):
-			if (i,j) in gol.current_state:
-				line += '#'
-			else:
-				line += ' '
-		print(line)
+    for i in range(start[0],end[0]+1):
+        line = ""
+        for j in range(start[1],end[1]+1):
+            if (i,j) in gol.current_state:
+                line += '#'
+            else:
+                line += ' '
+        print(line)
 
 if __name__ == '__main__':
-	gol = GameOfLife(set([(0,2),(1,2),(1,3),(2,3)]))
-	print('-1:\n')
-	print_state(gol,(-1,-1),(5,5))
-	for i in range(4):
-		print('%d:\n' % i)
-		gol.next_state()
-		print_state(gol,(-1,-1),(5,5))
+    gol = GameOfLife(set([(0,2),(1,2),(1,3),(2,3)]))
+    print('-1:\n')
+    print_state(gol,(-1,-1),(5,5))
+    for i in range(4):
+        print('%d:\n' % i)
+        gol.next_state()
+        print_state(gol,(-1,-1),(5,5))
