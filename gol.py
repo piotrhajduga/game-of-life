@@ -1,49 +1,51 @@
 class GameOfLife(object):
-	def __init__(self, state):
-		self.current_state = state
-	
-	def neighbour_count(self, x, y):
-		number_of = 0
-		if (x-1, y-1) in self.current_state: number_of += 1
-		if (x-1, y) in self.current_state: number_of += 1
-		if (x-1, y+1) in self.current_state: number_of += 1
-		if (x, y-1) in self.current_state: number_of += 1
-		if (x, y+1) in self.current_state: number_of += 1
-		if (x+1, y-1) in self.current_state: number_of += 1
-		if (x+1, y) in self.current_state: number_of += 1
-		if (x+1, y+1) in self.current_state: number_of += 1
-		return number_of
 
-	def get_new_state(self, x, y):
-		nc = self.neighbour_count(x, y)
-		if (x,y) in self.current_state:
-			return not (nc < 2 or nc > 3)
-		elif nc==3:
-			return True
-		return False
+    def __init__(self, state):
+        self.current_state = state
+    
+    def neighbour_count(self, x, y):
+        number_of = 0
+        for i in range(x-1, x+2):
+            for j in range(y-1, y+2):
+                if (i, j) == (x, y):
+                    continue
+                if (i, j) in self.current_state:
+                    number_of += 1
+        return number_of
 
-	def next_state(self):
-		result = set()
-		for cell in self.current_state:
-			if self.get_new_state(*cell):
-				result.add(cell)
-			x = cell[0]
-			y = cell[1]
-			if self.get_new_state(x-1, y-1):
-				result.add((x-1,y-1))
-			if self.get_new_state(x-1, y):
-				result.add((x-1,y))
-			if self.get_new_state(x-1, y+1):
-				result.add((x-1,y+1))
-			if self.get_new_state(x, y-1):
-				result.add((x,y-1))
-			if self.get_new_state(x, y+1):
-				result.add((x,y+1))
-			if self.get_new_state(x+1, y-1):
-				result.add((x+1,y-1))
-			if self.get_new_state(x+1, y):
-				result.add((x+1,y))
-			if self.get_new_state(x+1, y+1):
-				result.add((x+1,y+1))
-		self.current_state = result
-		return result
+    def get_new_state(self, x, y):
+        nc = self.neighbour_count(x, y)
+        if (x, y) in self.current_state:
+            return  (nc in [2,3])
+        elif nc == 3:
+            return True
+        return False
+
+    def next_state(self):
+        result = set()
+        for (x, y) in self.current_state:
+            for i in range(x-1, x+2):
+                for j in range(y-1, y+2):
+                    if self.get_new_state(i, j):
+                        result.add((i, j))
+        self.current_state = result
+        return result
+
+def print_state(gol,start,end):
+	for i in range(start[0],end[0]+1):
+		line = ""
+		for j in range(start[1],end[1]+1):
+			if (i,j) in gol.current_state:
+				line += '#'
+			else:
+				line += ' '
+		print(line)
+
+if __name__ == '__main__':
+	gol = GameOfLife(set([(0,2),(1,2),(1,3),(2,3)]))
+	print('-1:\n')
+	print_state(gol,(-1,-1),(5,5))
+	for i in range(4):
+		print('%d:\n' % i)
+		gol.next_state()
+		print_state(gol,(-1,-1),(5,5))
