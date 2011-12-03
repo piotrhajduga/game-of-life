@@ -13,3 +13,12 @@ class GameOfLife(object):
 		if (x+1, y) in self.current_state: number_of += 1
 		if (x+1, y+1) in self.current_state: number_of += 1
 		return number_of
+
+	def get_new_state(self, x, y):
+		nc = self.neighbour_count(x, y)
+		if (x,y) in self.current_state:
+			return not (nc < 2 or nc > 3)
+		elif nc==3:
+			return True
+		return False
+
