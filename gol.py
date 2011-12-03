@@ -5,10 +5,11 @@ class GameOfLife(object):
     
     def neighbour_count(self, x, y):
         number_of = 0
-        for i in range(x-1, x+2):
-            for j in range(y-1, y+2):
-                if (i, j) == (x, y):
-                    continue
+		for (i, j) in [
+				(x-1, y-1), (x-1, y), (x-1, y+1),
+				(x, y-1)  ,         , (x, y+1),
+				(x+1, y-1), (x+1, y), (x+1, y+1),
+				]:
                 if (i, j) in self.current_state:
                     number_of += 1
         return number_of
@@ -23,11 +24,18 @@ class GameOfLife(object):
 
     def next_state(self):
         result = set()
+		if self.get_new_state(x, y):
+			result.add((x, y))
         for (x, y) in self.current_state:
-            for i in range(x-1, x+2):
-                for j in range(y-1, y+2):
-                    if self.get_new_state(i, j):
-                        result.add((i, j))
+			for (i, j) in [
+					(x-1, y-1), (x-1, y), (x-1, y+1),
+					(x, y-1)  ,         , (x, y+1),
+					(x+1, y-1), (x+1, y), (x+1, y+1),
+					]:
+				if (i, j) in self.current_state:
+					continue
+				if self.get_new_state(i, j):
+					result.add((i, j))
         self.current_state = result
         return result
 
