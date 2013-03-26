@@ -6,7 +6,7 @@ class Test(unittest.TestCase):
         self.gol = GameOfLife(set([(1,1),(1,2),(1,3),(2,3)]))
     
     def testNeighbourCount(self):
-        self.assertEquals(1,self.gol.neighbour_count(1,1))
+        self.assertEquals(1,self.gol.get_neighbour_count(1,1))
 
     def testGetNewStateDie(self):
         assert(self.gol.get_new_state(1,1)==False)
