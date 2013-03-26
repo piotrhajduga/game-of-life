@@ -1,4 +1,5 @@
-import itertools
+from itertools import product
+from functools import lru_cache
 
 
 class GameOfLife(object):
@@ -10,6 +11,7 @@ class GameOfLife(object):
     def __init__(self, state):
         self.current_state = state
 
+    @lru_cache(maxsize=8)
     def get_neighbour_count(self, x, y):
         count = 0
         for neighbour in self.get_neighbours(x, y):
@@ -28,7 +30,7 @@ class GameOfLife(object):
         )
 
     def get_neighbours(self, x, y):
-        for point in itertools.product(
+        for point in product(
             range(x - 1, x + 2),
             range(y - 1, y + 2)
         ):
@@ -36,6 +38,7 @@ class GameOfLife(object):
                 yield point
 
     def next_state(self):
+        self.get_neighbour_count.cache_clear()
         result = set()
         for point in self.current_state:
             if self.get_new_state(*point):
