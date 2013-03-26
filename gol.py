@@ -11,7 +11,6 @@ class GameOfLife(object):
     def __init__(self, state):
         self.current_state = state
 
-    @lru_cache(maxsize=8)
     def get_neighbour_count(self, x, y):
         count = 0
         for neighbour in self.get_neighbours(x, y):
@@ -21,6 +20,7 @@ class GameOfLife(object):
                 count += 1
         return count
 
+    @lru_cache(maxsize=8)
     def get_new_state(self, x, y):
         count = self.get_neighbour_count(x, y)
         alive = (x, y) in self.current_state
@@ -38,7 +38,7 @@ class GameOfLife(object):
                 yield point
 
     def next_state(self):
-        self.get_neighbour_count.cache_clear()
+        self.get_new_state.cache_clear()
         result = set()
         for point in self.current_state:
             if self.get_new_state(*point):
@@ -71,9 +71,9 @@ if __name__ == '__main__':
         (2, 3),
         (1, 1)
     ]))
-    print('-1:\n')
+    print('-1:')
     print_state(gol, START, END)
     for i in range(5):
-        print('%d:\n' % i)
+        print('%d:' % i)
         gol.next_state()
         print_state(gol, START, END)
