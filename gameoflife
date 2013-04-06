@@ -7,10 +7,16 @@ import gol
 import pygame
 
 
+BACKGROUND = '#cccccc'
+GRID = '#bbbbbb'
+FOREGROUND = '#333333'
+ORIGIN = '#c00303'
+
+
 class GoL(game.PyGame):
     gol = None
     origin = (0, 0)
-    cell_size = 10
+    scale = 10
     generate = False
 
     def __init__(self):
@@ -18,32 +24,25 @@ class GoL(game.PyGame):
         self.gol = gol.GameOfLife()
 
     def init(self):
-        pass
+        self.update()
 
     def update(self):
         if self.generate:
             self.gol.next_state()
         # fill background
-        self.window.fill(Color('#cccccc'))
-        # mark origin
-        pygame.draw.line(self.window, Color('#c00303'),
-                         (self.origin[0], self.origin[1] - self.cell_size),
-                         (self.origin[0], self.origin[1] + self.cell_size),
-                         int(self.cell_size / 3) or 1)
-        pygame.draw.line(self.window, Color('#c00303'),
-                         (self.origin[0] - self.cell_size, self.origin[1]),
-                         (self.origin[0] + self.cell_size, self.origin[1]),
-                         int(self.cell_size / 3) or 1)
+        self.window.fill(Color(BACKGROUND))
         # draw cells
         o_cell = self.get_cell_from_pos((0, 0))
         dims_cell = self.get_cell_from_pos(self.dims)
-        x_range = (o_cell[0], dims_cell[0])
-        y_range = (o_cell[1], dims_cell[1])
+        x_range = (o_cell[0], dims_cell[0] + 1)
+        y_range = (o_cell[1], dims_cell[1] + 1)
         for x, y in product(range(*x_range), range(*y_range)):
             if self.gol.is_alive(x, y):
                 pos = self.get_pos_from_cell((x, y))
-                rect = (pos[0], pos[1], self.cell_size, self.cell_size)
-                pygame.draw.rect(self.window, Color('#333333'), rect)
+                rect = (pos[0], pos[1], self.scale, self.scale)
+                pygame.draw.rect(self.window, Color(FOREGROUND), rect)
+        # draw grid
+        self.draw_grid()
 
     def on_mouse_down(self, event):
         if event.button == 1:
@@ -62,8 +61,8 @@ class GoL(game.PyGame):
 
     def on_mouse_move(self, event):
         if event.buttons == (0, 1, 0):
-            self.origin = tuple([o + r for o, r
-                                 in zip(self.origin, event.rel)])
+            self.origin = tuple([
+                o + r for o, r in zip(self.origin, event.rel)])
 
     def on_key_down(self, event):
         if event.unicode == 'p':
@@ -73,6 +72,8 @@ class GoL(game.PyGame):
                 self.gol.next_state()
         elif event.unicode == 'c':
             self.gol.set_state([])
+        elif event.unicode == 'd':
+            self.decay(3)
         elif event.unicode == '+':
             self.size_up()
         elif event.unicode == '-':
@@ -86,18 +87,55 @@ class GoL(game.PyGame):
             self.dims, pygame.RESIZABLE | pygame.DOUBLEBUF)
 
     def size_up(self):
-        self.cell_size = int(self.cell_size * 2)
+        self.scale = int(self.scale * 2)
 
     def size_down(self):
-        self.cell_size = int(self.cell_size / 2 if self.cell_size > 8 else 4)
+        self.scale = int(self.scale / 2 if self.scale > 8 else 4)
 
     def get_cell_from_pos(self, pos):
-        return tuple([int(floor((p - o) / self.cell_size))
+        return tuple([int(floor((p - o) / self.scale))
                       for p, o in zip(pos, self.origin)])
 
     def get_pos_from_cell(self, cell):
-        return tuple([c * self.cell_size + o
+        return tuple([c * self.scale + o
                       for c, o in zip(cell, self.origin)])
+
+    def draw_grid(self):
+        grid_width = int(self.scale / 6) or 1
+        start = [o % self.scale for o in self.origin]
+        for x in range(start[0], self.dims[0], self.scale):
+            pygame.draw.line(
+                self.window, Color(GRID),
+                (x, 0), (x, self.dims[1]),
+                grid_width
+            )
+        for y in range(start[1], self.dims[1], self.scale):
+            pygame.draw.line(
+                self.window, Color(GRID),
+                (0, y), (self.dims[0], y),
+                grid_width
+            )
+        # mark origin
+        pygame.draw.line(
+            self.window, Color(ORIGIN),
+            (self.origin[0], self.origin[1] - self.scale + 1),
+            (self.origin[0], self.origin[1] + self.scale - 1),
+            grid_width
+        )
+        pygame.draw.line(
+            self.window, Color(ORIGIN),
+            (self.origin[0] - self.scale + 1, self.origin[1]),
+            (self.origin[0] + self.scale - 1, self.origin[1]),
+            grid_width
+        )
+
+    def decay(self, distance_factor):
+        center = self.get_cell_from_pos([int(x / 2) for x in self.dims])
+        for cell in self.gol.current_state:
+            if any([cl - cn > d * distance_factor
+                    for cl, cn, d
+                    in zip(cell, center, self.dims)]):
+                self.gol.current_state.remove(cell)
 
 
 if __name__ == '__main__':
