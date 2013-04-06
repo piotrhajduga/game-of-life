@@ -1,6 +1,4 @@
 import pygame
-from gol import GameOfLife
-from itertools import product
 from pygame.locals import *
 
 
@@ -12,9 +10,10 @@ class PyGame(object):
     callbacks = {
         MOUSEBUTTONDOWN: 'on_mouse_down',
         MOUSEBUTTONUP: 'on_mouse_up',
-        MOUSEMOTION: 'on_mouse_motion',
+        MOUSEMOTION: 'on_mouse_move',
         QUIT: 'on_quit',
         VIDEORESIZE: 'on_resize',
+        KEYDOWN: 'on_key_down',
     }
 
     def __init__(self, dims, caption, fps=30):
@@ -54,15 +53,6 @@ class PyGame(object):
     def update(self):
         pass
 
-    def on_mouse_down(self, event):
-        pass
-
-    def on_mouse_up(self, event):
-        pass
-
-    def on_mouse_move(self, event):
-        pass
-
     def on_resize(self, event):
         self.dims = event.size
         self.window = pygame.display.set_mode(
@@ -70,4 +60,7 @@ class PyGame(object):
         )
 
     def on_quit(self, event):
+        self.stop()
+
+    def stop(self):
         raise StopGame()
