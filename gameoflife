@@ -1,7 +1,0 @@
-#!/usr/bin/env python3.2
-import game
-
-
-if __name__ == '__main__':
-    g = game.PyGame((640, 480), "Game of Life")
-    g.start()
