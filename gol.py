@@ -28,7 +28,7 @@ class GameOfLife(object):
     def is_alive(self, x, y):
         return (x, y) in self.current_state
 
-    @lru_cache(maxsize=8)
+    @lru_cache(maxsize=64)
     def get_new_state(self, x, y):
         count = self.get_neighbour_count(x, y)
         alive = (x, y) in self.current_state
