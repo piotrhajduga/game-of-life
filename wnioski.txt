@@ -1,0 +1,3 @@
+Optymalizacja!
+-> przechowywać ilość sąsiadów w samym tuplu żywej lub martwej komórki, która może z jakąś sąsiadować komórki i aktualizować tylko przy zmianie w okolicy (przy dodaniu lub usunięciu komórki aktualizować wartość okolicznych)
+	* nie tracimy czasu na liczenie miejsc gdzie nic sie nie dzieje
