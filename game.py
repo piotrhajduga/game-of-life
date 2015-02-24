@@ -1,5 +1,12 @@
 import pygame
-from pygame.locals import *
+from pygame.locals import (
+    MOUSEBUTTONDOWN,
+    MOUSEBUTTONUP,
+    MOUSEMOTION,
+    QUIT,
+    VIDEORESIZE,
+    KEYDOWN,
+)
 
 
 class StopGame(Exception):
@@ -17,17 +24,24 @@ class PyGame(object):
     }
 
     def __init__(self, dims, caption, fps=30):
-        self.dims = dims
+        self._dims = dims
         self.fps = fps
         self.caption = caption
-
+        self.screen = None
         self._fps_clock = pygame.time.Clock()
+
+    @property
+    def dims(self):
+        try:
+            return self.screen.get_size()
+        except AttributeError:
+            return self._dims
 
     def start(self):
         pygame.init()
         pygame.display.set_caption(self.caption)
 
-        self.window = pygame.display.set_mode(
+        self.screen = pygame.display.set_mode(
             self.dims, pygame.RESIZABLE | pygame.DOUBLEBUF
         )
 
@@ -41,7 +55,9 @@ class PyGame(object):
                         callback(event)
                     except KeyError:
                         pass
+                self.surface = pygame.Surface(self.screen.get_size())
                 self.update()
+                self.screen.blit(self.surface, (0, 0))
                 pygame.display.flip()
                 self._fps_clock.tick(self.fps)
         except StopGame:
@@ -55,7 +71,7 @@ class PyGame(object):
 
     def on_resize(self, event):
         self.dims = event.size
-        self.window = pygame.display.set_mode(
+        self.screen = pygame.display.set_mode(
             self.dims, pygame.RESIZABLE | pygame.DOUBLEBUF
         )
 
