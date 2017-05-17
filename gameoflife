@@ -32,11 +32,15 @@ class GoL(game.PyGame):
         # fill background
         self.surface.fill(Color(BACKGROUND))
         # draw cells
+        ## figure out edge cells
         o_cell = self.get_cell_from_pos((0, 0))
         dims_cell = self.get_cell_from_pos(self.dims)
+        ## set ranged based on edge cells
         x_range = (o_cell[0], dims_cell[0] + 1)
         y_range = (o_cell[1], dims_cell[1] + 1)
+        ## do a rectangle of (x,y) pairs for given ranges
         for x, y in product(range(*x_range), range(*y_range)):
+            ### and fill it with living cells
             if self.gol.is_alive(x, y):
                 pos = self.get_pos_from_cell((x, y))
                 rect = (pos[0], pos[1], self.scale, self.scale)
